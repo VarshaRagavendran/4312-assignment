@@ -1,0 +1,5 @@
+top: THEORY
+BEGIN
+    IMPORTING Time
+    IMPORTING isolette
+END top

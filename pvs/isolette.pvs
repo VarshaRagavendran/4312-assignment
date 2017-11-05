@@ -1,230 +1,278 @@
-isolette  % [ parameters ]
-		: THEORY
+isolette : THEORY
 
   BEGIN
 
-  delta: posreal 
-	
+  delta : posreal
   IMPORTING Time[delta]
+
   i : VAR DTIME
-
-  LOW_ALARM_TEMP : TYPE = {t: integer | t >=93 AND t<=98} CONTAINING 98
-  HIGH_ALARM_TEMP : TYPE = {t: integer | t >= 99 AND t<=103} CONTAINING 103
-  DESIRED_LOW_TEMP : TYPE = {t: integer | t>=97 AND t<=99} CONTAINING 99
-  DESIRED_HIGH_TEMP : TYPE = {t: integer | t>=98 AND t<=100} CONTAINING 100
-  ACTUAL_TEMP: TYPE = {t:integer | t>=65 AND t<=105} CONTAINING 105
-  ON_OFF : TYPE = {on,off}
-  HEAT_CONTROL_MODE: TYPE = {on,off}
-  SENSOR : TYPE = {valid,invalid}
-  MODE : TYPE = {off, init, normal, failed}
-  ERROR: TYPE = {ok,err1,err2,err3,err4,err5,err6}
-
+  
+  % Valid Ranges and Modes of Monitored and Controlled Variables
+  M_AL_RANGE : TYPE = {t: integer | t >= 93 AND t <= 98}  CONTAINING 98
+  M_AH_RANGE : TYPE = {t: integer | t >= 99 AND t <= 103} CONTAINING 103
+  M_DL_RANGE : TYPE = {t: integer | t >= 97 AND t <= 99}  CONTAINING 99
+  M_DH_RANGE : TYPE = {t: integer | t >= 98 AND t <= 100} CONTAINING 100
+  M_TM_RANGE : TYPE = {t: integer | t >= 65 AND t <= 105} CONTAINING 105
+  ON_OFF_MODES : TYPE = {on, off}
+  HEAT_CONTROL_MODES : TYPE = {on, off}
+  SENSOR_MODES : TYPE = {valid, invalid}
+  ISOLETTE_MODES : TYPE = {off, init, normal, failed}
+  ERROR_MODES: TYPE = {ok, err1, err2, err3, err4, err5, err6}
+  
+  %Timing Resolution of Alarm
   EPS: real = 0.5
 
-  %MONITORED
-  m_ah:   [DTIME -> HIGH_ALARM_TEMP]
-  m_tm: [DTIME -> real]
-  m_al:   [DTIME -> LOW_ALARM_TEMP]
-  m_dl:   [DTIME -> DESIRED_LOW_TEMP]
-  m_dh:   [DTIME -> DESIRED_HIGH_TEMP]
-  m_st: [DTIME -> SENSOR]
-  m_sw: [DTIME -> ON_OFF]
+  %MONITORED Variables
+  m_ah: [DTIME -> M_AH_RANGE] % higher alarm temperature
+  m_tm: [DTIME -> M_TM_RANGE] % actual temperature
+  m_al: [DTIME -> M_AL_RANGE] % lower alarm temperature
+  m_dl: [DTIME -> M_DL_RANGE] % desired low temperature
+  m_dh: [DTIME -> M_DH_RANGE] % desired high temperature
+  m_st: [DTIME -> SENSOR_MODES] % status of sensor
+  m_sw: [DTIME -> ON_OFF_MODES] % switch
   
-  %CONTROLLED
-  c_al_low : [DTIME -> ON_OFF] % low alarm temperature
-  c_ah_high : [DTIME -> ON_OFF] % high alarm temperature
-  c_low_high : [DTIME -> ON_OFF] % internal alarm considering low and high
-  c_al: [DTIME -> ON_OFF]
-  c_md: [DTIME -> MODE]
-  c_hc: [DTIME -> HEAT_CONTROL_MODE]
-  c_ms: [DTIME -> ERROR]
-  c_td: [DTIME -> integer]
+  %CONTROLLED Variables
+  lo : [DTIME -> ON_OFF_MODES] % low alarm temperature [abstract variable]
+  hi : [DTIME -> ON_OFF_MODES] % high alarm temperature [abstract variable]
+  alarm : [DTIME -> ON_OFF_MODES] % internal alarm considering low and high [abstract variable]
+  c_al: [DTIME -> ON_OFF_MODES] % Main Alarm of Isolette
+  c_md: [DTIME -> ISOLETTE_MODES] % mode of isolette operation
+  c_hc: [DTIME -> HEAT_CONTROL_MODES] % heat control
+  c_ms: [DTIME -> ERROR_MODES] % messages to display
+  c_td: [DTIME -> integer] % temperature display
   
-
-  %ENVIRONMENT
-
-  % Valid Operator Settings
+  %ENVIRONMENT CONDITIONS
   env1: bool =
-   FORALL(i:DTIME):
-	m_al(i) < m_dl(i) AND m_dl(i)< m_dh(i) AND m_dh(i) < m_ah(i)
+  FORALL(i:DTIME):
+      m_al(i) < m_dl(i) AND m_dl(i) < m_dh(i) AND m_dh(i) < m_ah(i)
 
-  % Mode is off when i=0
-  env2: bool =
-	c_md(0)=off
+  env2 : bool =
+  c_md(0) = off
 
-  % (TODO********************************)No Overlapping of High and Low alarm regions
-  env3: bool =
-      FORALL(i:DTIME):
-          m_ah(i)-EPS > m_al(i)+EPS AND m_ah(i)<(m_al(i)-EPS)
-
-  %——————————————————————————————–MODES——————————————————————————————–%
-  modes(i:DTIME): bool =
-   COND
-	i=0 -> c_md(i)=off,
-	i>0 -> 
-	   COND
-               m_sw(i)=off -> c_md(i)=off,
-	       m_sw(i)=on ->
-	       	   COND
-			c_md(i-1)=off -> c_md(i)=init,
-			c_md(i-1)=init -> 
-		            COND
-				m_st(i)=valid AND m_dl(i)<= m_tm(i) <= m_dh(i) AND env1 -> c_md(i)=normal,
-				not(m_st(i)=valid AND m_dl(i)<= m_tm(i) <= m_dh(i) AND env1) -> c_md(i)=c_md(i-1)
-		            ENDCOND
-			,c_md(i-1)=normal ->
-			    COND
-			        m_st(i)=valid -> c_md(i)=c_md(i-1),
-				m_st(i)=invalid -> c_md(i)=failed
-			    ENDCOND
-			,c_md(i-1)=failed ->
-			    COND
-			        m_st(i)=invalid -> c_md(i)=c_md(i-1),
-				m_st(i)=valid -> c_md(i)=normal
-			    ENDCOND
-		   ENDCOND 
-	   ENDCOND
-   ENDCOND
-  %——————————————————————————————–ERROR MESSAGES——————————————————————————————–%
-  error(i:DTIME): bool =
-     % env2 IMPLIES
-          COND
-	      i=0 -> c_ms(i)=ok,
-	      i>0 ->
-	          IF m_st(i)=invalid THEN
-		      c_ms(i)=err1
-		  ELSIF m_tm(i) > m_dh(i) THEN
-		      c_ms(i)=err2
-		  ELSIF m_tm(i) < m_dl(i) THEN
-		      c_ms(i)=err3
-		  ELSIF m_al(i) >= m_dl(i) THEN
-		      c_ms(i)=err4
-		  ELSIF m_dl(i) >= m_dh(i) THEN
-		      c_ms(i)=err5
-		  ELSIF m_dh(i) >= m_ah(i) THEN
-		      c_ms(i)=err6
-		  ELSE
-		      c_ms(i)=ok
-		  ENDIF
+  env3 : bool =
+  FORALL(i:DTIME) :
+      (m_ah(i)-EPS) > (m_al(i)+EPS) AND m_ah(i) < (m_al(i)-EPS)
+  
+  %------------------------------------------------------------------------%
+  %Mode Function:
+  %	Determines the mode of isolette operation {off, init, normal, failed} 
+  mode(i:DTIME) : bool =
+  COND
+      i = 0 -> c_md(i) = off,
+      i > 0 -> 
+      COND
+          m_sw(i) = off -> c_md(i) = off,
+	  m_sw(i) = on ->
+	  COND
+	      c_md(i-1) = off -> c_md(i) = init,
+	      c_md(i-1) = init -> 
+	      COND
+	          m_st(i) = valid AND m_dl(i) <= m_tm(i) <= m_dh(i) AND env1 -> c_md(i) = normal,
+		  not(m_st(i) = valid AND m_dl(i) <= m_tm(i) <= m_dh(i) AND env1) -> c_md(i) = c_md(i-1)
+	      ENDCOND,
+	      c_md(i-1) = normal ->
+	      COND
+	          m_st(i) = valid -> c_md(i) = c_md(i-1),
+		  m_st(i) = invalid -> c_md(i) = failed
+	      ENDCOND,
+              c_md(i-1) = failed ->
+	      COND
+	          m_st(i) = invalid -> c_md(i) = c_md(i-1),
+		  m_st(i) = valid -> c_md(i) = normal
+	      ENDCOND
+          ENDCOND 
+      ENDCOND
+  ENDCOND
+  %------------------------------------------------------------------------%
+  %Display Messages Function:
+  %	 Determines the message to be displayed 
+  display_messages(i:DTIME) : bool =
+  COND
+      i = 0 -> c_ms(i) = ok,
+      i > 0 ->
+      IF m_st(i) = invalid THEN
+          c_ms(i) = err1
+      ELSIF m_tm(i) > m_dh(i) THEN
+	  c_ms(i) = err2
+      ELSIF m_tm(i) < m_dl(i) THEN
+          c_ms(i) = err3
+      ELSIF m_al(i) >= m_dl(i) THEN
+          c_ms(i) = err4
+      ELSIF m_dl(i) >= m_dh(i) THEN
+	  c_ms(i) = err5
+      ELSIF m_dh(i) >= m_ah(i) THEN
+          c_ms(i) = err6
+      ELSE
+          c_ms(i) = ok
+      ENDIF
+  ENDCOND
+  %------------------------------------------------------------------------%
+  %Display Temperature Function:
+  %	Displays the temperature of the isolette.
+  display_temperature(i:DTIME) : bool =
+  COND
+      c_md(i) = normal -> c_td(i) = floor(m_tm(i)+0.5),
+      c_md(i) = off OR c_md(i) = init OR c_md(i) = failed -> c_td(i) = 0
+  ENDCOND
+  %------------------------------------------------------------------------%
+  %Heat Control Function:
+  %	Determines the mode of the heat control (thermostat) {on,off}.
+  heat_control(i:DTIME) : bool =
+  env1 
+      IMPLIES
+  COND
+      i = 0 -> c_hc(i) = off,
+      i > 0 ->
+      COND
+          c_md(i) = init OR c_md(i) = off -> c_hc(i) = off,
+	  NOT(c_md(i) = init OR c_md(i) = off) ->
+	  COND
+              c_md(i) = normal ->
+	      COND
+	          m_tm(i) < m_dl(i) -> c_hc(i) = on,
+		  m_tm(i) > m_dh(i) -> c_hc(i) = off,
+		  m_dl(i) <= m_tm(i) AND m_tm(i) <= m_dh(i) -> c_hc(i) = c_hc(i-1)	
+	      ENDCOND,
+	      c_md(i) = failed -> c_hc(i) = off
 	  ENDCOND
-  %——————————————————————————————–DISPLAY TEMPERATURE——————————————————————————————–%
-  display_temp(i:DTIME): bool =
-  %   env2 IMPLIES
-     COND
-	c_md(i)=normal -> c_td(i)=floor(m_tm(i)+0.5),
-	c_md(i)=off OR c_md(i)=init OR c_md(i)=failed -> c_td(i)=0
-     ENDCOND
-  %——————————————————————————————–THERMOSTAT (HEAT CONTROL)——————————————————————————————–%
-
-  heat_control(i:DTIME): bool =
-    % removed env2
-    env1  IMPLIES
-    COND
-	i=0 -> c_hc(i) = off,
-	i>0 ->
-    	COND
-	    c_md(i) = init OR c_md(i) = off -> c_hc(i) = off,
-		NOT(c_md(i) = init OR c_md(i) = off) ->
-	   	    COND
-		        c_md(i)=normal ->
-		  	    COND
-		                m_tm(i) < m_dl(i) -> c_hc(i) = on,
-				m_tm(i) > m_dh(i) -> c_hc(i) = off,
-				m_dl(i) <= m_tm(i) AND m_tm(i)<= m_dh(i) -> c_hc(i)=c_hc(i-1)	
-		  	    ENDCOND
-			, c_md(i)=failed -> c_hc(i) = off
-	            ENDCOND
-    	ENDCOND
-    ENDCOND
-
-  %——————————————————————————————–ALARM——————————————————————————————–%
-  c_al_bool(i:DTIME): bool = c_al(i) = on
-
-  low_alarm(i:DTIME): bool = 
-      COND
-	  i=0 -> c_al_low(i)=off,
-	  i>0 ->
-	      COND
-	          m_tm(i) < m_al(i) -> c_al_low(i) = on,
-		  m_tm(i) >= m_al(i) AND m_tm(i) < (m_al(i)+EPS) -> c_al_low(i) = c_al_low(i-1),
-		  m_tm(i) >= (m_al(i)+EPS) -> c_al_low(i) = off
-
-	      ENDCOND
       ENDCOND
+  ENDCOND
+  %------------------------------------------------------------------------%
+  %Predicate Function:
+  %    [DTIME -> Bool]
+  c_al_pred(i:DTIME) : bool = c_al(i) = on
 
-  high_alarm(i:DTIME): bool =
+  %Low Alarm Function: [Abstract Variable]
+  %    Determines if actual temperature is within the low alarm bandwidth.
+  %    Low Alarm is turned on if actual temperature is below low alarm bandwidth.
+  low_alarm(i:DTIME) : bool = 
+  COND
+      i = 0 -> lo(i) = off,
+      i > 0 ->
       COND
-          i=0 -> c_ah_high(i)=off,
-	  i>0 ->
-	     COND
-		m_tm(i) > m_ah(i) -> c_ah_high(i)=on,
-		m_tm(i) <= m_ah(i) AND m_tm(i) >= (m_ah(i)-EPS) -> c_ah_high(i) = c_ah_high(i-1),
-		m_tm(i) < m_ah(i)-EPS -> c_ah_high(i)=off
-	     ENDCOND
+          m_tm(i) < m_al(i) -> lo(i) = on,
+	  m_tm(i) >= m_al(i) AND m_tm(i) < (m_al(i)+EPS) -> lo(i) = lo(i-1),
+	  m_tm(i) >= (m_al(i)+EPS) -> lo(i) = off
       ENDCOND
+  ENDCOND
 
-  total_alarm(i:DTIME): bool =
+  %High Alarm Function: [Abstract Variable]
+  %    Determines if actual temperature is within the high alarm bandwidth.
+  %    High Alarm is turned on if actual temperature is above high alarm bandwidth.
+  high_alarm(i:DTIME) : bool =
+  COND
+      i = 0 -> hi(i) = off,
+      i > 0 ->
       COND
-	  c_al_low(i)=on OR c_ah_high(i)=on -> c_low_high(i) = on,
-	  NOT(c_al_low(i)=on OR c_ah_high(i)=on) -> c_low_high(i) = off
+          m_tm(i) > m_ah(i) -> hi(i) = on,
+	  m_tm(i) <= m_ah(i) AND m_tm(i) >= (m_ah(i)-EPS) -> hi(i) = hi(i-1),
+	  m_tm(i) < m_ah(i)-EPS -> hi(i) = off
       ENDCOND
+  ENDCOND
 
-  alarm(i:DTIME): bool =
+  %Alarm Check Function: [Abstract Variable]
+  %    Determines if High Alarm or Low Alarm is on. 
+  alarm_check(i:DTIME) : bool =
+  COND
+      lo(i) = on OR hi(i) = on -> alarm(i) = on,
+      NOT(lo(i) = on OR hi(i) = on) -> alarm(i) = off
+  ENDCOND
+
+  %Alarm Function: 
+  %    Controls the main alarm of the isolette to notify nurse
+  alarm(i:DTIME) : bool =
+  COND
+      i = 0 -> c_al(i) = off,
+      i > 0 ->
       COND
-          i=0 -> c_al(i)=off
-	  ,i>0 ->
-	      COND
-	          c_md(i)=off OR c_md(i)=init -> c_al(i)=off,
-		  c_md(i)=normal ->
-		      COND
-		          env1 AND m_st(i)=valid ->
-			      COND
-			          c_low_high(i)=on OR NOT held_for(c_al_bool,10)(i-1) -> c_al(i)=on,
-				  c_low_high(i)=off AND held_for(c_al_bool,10)(i-1) -> c_al(i)=off 
-			      ENDCOND
-			  ,NOT(env1 AND m_st(i)=valid) -> c_al(i)=on
-		      ENDCOND
-		  ,c_md(i)=failed -> c_al(i)=on
-	      ENDCOND
+          c_md(i) = off OR c_md(i) = init -> c_al(i) = off,
+	  c_md(i) = normal ->
+	  COND
+	      env1 AND m_st(i) = valid ->
+ 	      COND
+	          alarm(i) = on OR NOT held_for(c_al_pred,10)(i-1) -> c_al(i) = on,
+	          alarm(i) = off AND held_for(c_al_pred,10)(i-1) -> c_al(i) = off 
+	      ENDCOND,
+	      NOT(env1 AND m_st(i) = valid) -> c_al(i) = on
+          ENDCOND,
+          c_md(i) = failed -> c_al(i) = on
       ENDCOND
+  ENDCOND
 
-  no_simultaneous_alarm(i:DTIME): bool = 
-          NOT(c_al_low(i)=on AND c_ah_high(i)=on)
+  % No Simulataneous Alarm Function:
+  %    Alarm cannot be in on mode at low alarm bandwidth and high alarm bandwidth.
+  no_simultaneous_alarm(i:DTIME) : bool = 
+  NOT(lo(i)=on AND hi(i)=on)
+  %------------------------------------------------------------------------%
+  %INVARIANTS
+  inv1 : CONJECTURE 
+  FORALL(i:DTIME) :
+      c_md(i) = off OR c_md(i) = init OR c_md(i) = normal OR c_md(i) = failed
 
-    %INVARIANTS
- inv1: CONJECTURE 
-     FORALL(i:DTIME):
-         c_md(i)=off OR c_md(i)=init OR c_md(i)=normal OR c_md(i)=failed
+  inv2 : CONJECTURE
+  FORALL(i:DTIME) :
+      c_ms(i) = ok OR c_ms(i) = err1 OR c_ms(i) = err2 OR c_ms(i) = err3 OR c_ms(i) = err4 OR c_ms(i) = err5 OR c_ms(i) = err6
 
- inv2: CONJECTURE
-     FORALL(i:DTIME):
-         c_ms(i)=ok OR c_ms(i)=err1 OR c_ms(i)=err2 OR c_ms(i)=err3 OR c_ms(i)=err4 OR c_ms(i)=err5 OR c_ms(i)=err6
-
- inv3: CONJECTURE
-     EXISTS(i:DTIME):
-	 alarm(i) AND c_md(i) = failed IMPLIES c_al(i) = on
+  inv3 : CONJECTURE
+  EXISTS(i:DTIME) :
+      alarm(i) AND c_md(i) = failed IMPLIES c_al(i) = on
          %c_md(i) = failed OR c_low_high(i)=on IMPLIES c_al(i)=on
 
- inv4: CONJECTURE
-     FORALL(i: DTIME):
-         (i > 0 AND alarm(i) AND NOT(c_md(i) = init OR  c_md(i) = off OR c_md(i) = failed)) IMPLIES (c_low_high(i)=on => c_al(i)=on)
+  inv4 : CONJECTURE
+  FORALL(i: DTIME) :
+      (i > 0 AND alarm(i) AND NOT(c_md(i) = init OR  c_md(i) = off OR c_md(i) = failed)) IMPLIES (alarm(i) = on => c_al(i) = on)
      
-  alarm_req_entails_inv: THEOREM
-     FORALL(i:DTIME):
-     env3 AND total_alarm(i) IMPLIES no_simultaneous_alarm(i)
-
+  alarm_req_entails_inv : THEOREM
+  FORALL(i:DTIME) :
+      env3 AND alarm_check(i) IMPLIES no_simultaneous_alarm(i)
+  %------------------------------------------------------------------------%
+  %USE CASES
   usecase1: CONJECTURE
-     m_sw(1) = on AND m_tm(1)=95 AND m_ah(1)=103 AND m_al(1)=97 AND m_dl(1)=98 AND m_dh(1)=100 AND m_st(1)=valid AND modes(1) AND modes(0)
-     IMPLIES
-     c_md(0)=off AND c_md(1)=init
-
-  usecase3: CONJECTURE
-     m_sw(0)=off AND m_ah(0)=99 AND m_al(0)=94 AND m_dl(0)=97 AND m_dh(0)=98 AND alarm(0) IMPLIES c_al(0)=off
+  m_sw(1) = on 
+  AND m_tm(1) = 95 
+  AND m_ah(1) = 103 
+  AND m_al(1) = 97 
+  AND m_dl(1) = 98 
+  AND m_dh(1) = 100 
+  AND m_st(1) = valid 
+  AND mode(1) AND mode(0)
+      IMPLIES
+  c_md(0)=off AND c_md(1)=init
 
   usecase2: CONJECTURE
-     m_sw(1)=on AND m_ah(1)=99 AND m_al(1)=94 AND m_dl(1)=97 AND m_dh(1)=98 AND alarm(1) AND modes(1) AND modes(0) IMPLIES c_al(1)=off
+  m_sw(0) = off 
+  AND m_ah(0) = 99 
+  AND m_al(0) = 94 
+  AND m_dl(0) = 97 
+  AND m_dh(0) = 98 
+  AND alarm(0) 
+      IMPLIES 
+  c_al(0)=off
 
-  usecase4: CONJECTURE
-     m_sw(2)=on AND m_ah(2)=99 AND m_al(2)=94 AND m_dl(2)=97 AND m_dh(2)=99 AND alarm(2) AND modes(2) AND modes(1) AND modes(0) AND total_alarm(2) AND high_alarm(2)  AND m_st(2)=valid  AND m_sw(1)=on AND m_tm(2)=98  IMPLIES c_al(2)=off
+  usecase3: CONJECTURE
+  m_sw(1) = on 
+  AND m_ah(1) = 99 
+  AND m_al(1) = 94 
+  AND m_dl(1) = 97 
+  AND m_dh(1) = 98 
+  AND alarm(1) 
+  AND mode(1) AND mode(0) 
+      IMPLIES 
+  c_al(1) = off
+
+  usecase4: CONJECTURE 
+  m_ah(2)=99 
+  AND m_al(2)=94 
+  AND m_dl(2)=97 
+  AND m_dh(2)=99 
+  AND alarm(2) 
+  AND mode(2) AND mode(1) AND mode(0) 
+  AND alarm_check(2) 
+  AND high_alarm(2)  
+  AND m_st(2)=valid  
+  AND m_sw(1)=on AND m_sw(2)=on
+  AND m_tm(2)=98  
+      IMPLIES 
+  c_al(2)=off
 
   END isolette

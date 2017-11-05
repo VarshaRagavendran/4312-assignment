@@ -1,6 +1,6 @@
 (isolette
- (modes_TCC1 0
-  (modes_TCC1-1 nil 3718821796 ("" (subtype-tcc) nil nil)
+ (mode_TCC1 0
+  (mode_TCC1-1 nil 3718825734 ("" (subtype-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -26,8 +26,8 @@
     (real_ge_is_total_order name-judgement "(total_order?[real])"
      real_props nil))
    nil))
- (modes_TCC2 0
-  (modes_TCC2-1 nil 3718821796 ("" (cond-disjoint-tcc) nil nil)
+ (mode_TCC2 0
+  (mode_TCC2-1 nil 3718825734 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -49,8 +49,8 @@
     (DTIME type-eq-decl nil Time nil)
     (env1 const-decl "bool" isolette nil))
    nil))
- (modes_TCC3 0
-  (modes_TCC3-1 nil 3718821796 ("" (cond-disjoint-tcc) nil nil)
+ (mode_TCC3 0
+  (mode_TCC3-1 nil 3718825734 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -76,8 +76,8 @@
     (real_gt_is_strict_total_order name-judgement
      "(strict_total_order?[real])" real_props nil))
    nil))
- (modes_TCC4 0
-  (modes_TCC4-1 nil 3718821796 ("" (cond-coverage-tcc) nil nil)
+ (mode_TCC4 0
+  (mode_TCC4-1 nil 3718825734 ("" (cond-coverage-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -103,8 +103,8 @@
     (real_ge_is_total_order name-judgement "(total_order?[real])"
      real_props nil))
    nil))
- (modes_TCC5 0
-  (modes_TCC5-1 nil 3718821796 ("" (cond-disjoint-tcc) nil nil)
+ (mode_TCC5 0
+  (mode_TCC5-1 nil 3718825734 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -130,8 +130,8 @@
     (real_gt_is_strict_total_order name-judgement
      "(strict_total_order?[real])" real_props nil))
    nil))
- (modes_TCC6 0
-  (modes_TCC6-1 nil 3718821796 ("" (cond-coverage-tcc) nil nil)
+ (mode_TCC6 0
+  (mode_TCC6-1 nil 3718825734 ("" (cond-coverage-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -157,8 +157,8 @@
     (real_ge_is_total_order name-judgement "(total_order?[real])"
      real_props nil))
    nil))
- (modes_TCC7 0
-  (modes_TCC7-1 nil 3718821796 ("" (cond-disjoint-tcc) nil nil)
+ (mode_TCC7 0
+  (mode_TCC7-1 nil 3718825734 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -184,8 +184,8 @@
     (real_ge_is_total_order name-judgement "(total_order?[real])"
      real_props nil))
    nil))
- (modes_TCC8 0
-  (modes_TCC8-1 nil 3718821796 ("" (cond-coverage-tcc) nil nil)
+ (mode_TCC8 0
+  (mode_TCC8-1 nil 3718825734 ("" (cond-coverage-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -211,8 +211,8 @@
     (real_ge_is_total_order name-judgement "(total_order?[real])"
      real_props nil))
    nil))
- (modes_TCC9 0
-  (modes_TCC9-1 nil 3718821796 ("" (cond-disjoint-tcc) nil nil)
+ (mode_TCC9 0
+  (mode_TCC9-1 nil 3718825734 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -237,8 +237,8 @@
     (real_gt_is_strict_total_order name-judgement
      "(strict_total_order?[real])" real_props nil))
    nil))
- (modes_TCC10 0
-  (modes_TCC10-1 nil 3718821796 ("" (cond-coverage-tcc) nil nil)
+ (mode_TCC10 0
+  (mode_TCC10-1 nil 3718825734 ("" (cond-coverage-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -263,8 +263,8 @@
     (real_ge_is_total_order name-judgement "(total_order?[real])"
      real_props nil))
    nil))
- (modes_TCC11 0
-  (modes_TCC11-1 nil 3718821796 ("" (cond-disjoint-tcc) nil nil)
+ (mode_TCC11 0
+  (mode_TCC11-1 nil 3718825734 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -289,8 +289,8 @@
     (real_gt_is_strict_total_order name-judgement
      "(strict_total_order?[real])" real_props nil))
    nil))
- (modes_TCC12 0
-  (modes_TCC12-1 nil 3718821796 ("" (cond-coverage-tcc) nil nil)
+ (mode_TCC12 0
+  (mode_TCC12-1 nil 3718825734 ("" (cond-coverage-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -315,8 +315,9 @@
     (real_ge_is_total_order name-judgement "(total_order?[real])"
      real_props nil))
    nil))
- (display_temp_TCC1 0
-  (display_temp_TCC1-1 nil 3718821796 ("" (cond-disjoint-tcc) nil nil)
+ (display_temperature_TCC1 0
+  (display_temperature_TCC1-1 nil 3718828408
+   ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -339,8 +340,9 @@
     (real_ge_is_total_order name-judgement "(total_order?[real])"
      real_props nil))
    nil))
- (display_temp_TCC2 0
-  (display_temp_TCC2-1 nil 3718821796 ("" (cond-coverage-tcc) nil nil)
+ (display_temperature_TCC2 0
+  (display_temperature_TCC2-1 nil 3718828408
+   ("" (cond-coverage-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -691,8 +693,8 @@
      real_props nil)
     (EPS const-decl "real" isolette nil))
    nil))
- (total_alarm_TCC1 0
-  (total_alarm_TCC1-1 nil 3718821796 ("" (cond-disjoint-tcc) nil nil)
+ (alarm_check_TCC1 0
+  (alarm_check_TCC1-1 nil 3718828408 ("" (cond-disjoint-tcc) nil nil)
    ((boolean nonempty-type-decl nil booleans nil)
     (bool nonempty-type-eq-decl nil booleans nil)
     (NOT const-decl "[bool -> bool]" booleans nil)
@@ -782,7 +784,7 @@
     (real_gt_is_strict_total_order name-judgement
      "(strict_total_order?[real])" real_props nil)
     (env1 const-decl "bool" isolette nil)
-    (c_al_bool const-decl "bool" isolette nil)
+    (c_al_pred const-decl "bool" isolette nil)
     (delta const-decl "posreal" isolette nil)
     (posreal nonempty-type-eq-decl nil real_types nil)
     (> const-decl "bool" reals nil)
@@ -814,7 +816,7 @@
     (real_gt_is_strict_total_order name-judgement
      "(strict_total_order?[real])" real_props nil)
     (env1 const-decl "bool" isolette nil)
-    (c_al_bool const-decl "bool" isolette nil)
+    (c_al_pred const-decl "bool" isolette nil)
     (delta const-decl "posreal" isolette nil)
     (posreal nonempty-type-eq-decl nil real_types nil)
     (> const-decl "bool" reals nil)
@@ -939,7 +941,7 @@
     (rational nonempty-type-from-decl nil rationals nil)
     (rational_pred const-decl "[real -> boolean]" rationals nil)
     (env1 const-decl "bool" isolette nil)
-    (c_al_bool const-decl "bool" isolette nil)
+    (c_al_pred const-decl "bool" isolette nil)
     (delta const-decl "posreal" isolette nil)
     (posreal nonempty-type-eq-decl nil real_types nil)
     (> const-decl "bool" reals nil)
@@ -972,7 +974,7 @@
     (real_gt_is_strict_total_order name-judgement
      "(strict_total_order?[real])" real_props nil)
     (env1 const-decl "bool" isolette nil)
-    (c_al_bool const-decl "bool" isolette nil)
+    (c_al_pred const-decl "bool" isolette nil)
     (delta const-decl "posreal" isolette nil)
     (posreal nonempty-type-eq-decl nil real_types nil)
     (> const-decl "bool" reals nil)
@@ -1025,23 +1027,23 @@
      real_props nil)
     (EPS const-decl "real" isolette nil)
     (env3 const-decl "bool" isolette nil)
-    (total_alarm const-decl "bool" isolette nil)
+    (alarm_check const-decl "bool" isolette nil)
     (no_simultaneous_alarm const-decl "bool" isolette nil))
    shostak))
  (usecase1 0
   (usecase1-1 nil 3718821904 ("" (grind) nil nil)
-   ((modes const-decl "bool" isolette nil)
+   ((mode const-decl "bool" isolette nil)
     (env1 const-decl "bool" isolette nil)
     (b2n const-decl "nbit" bit nil))
    shostak))
- (usecase3 0
-  (usecase3-1 nil 3718821912 ("" (grind) nil nil)
-   ((alarm const-decl "bool" isolette nil)) shostak))
  (usecase2 0
   (usecase2-1 nil 3718821934 ("" (grind) nil nil)
+   ((alarm const-decl "bool" isolette nil)) shostak))
+ (usecase3 0
+  (usecase3-1 nil 3718821912 ("" (grind) nil nil)
    ((posreal_div_posreal_is_posreal application-judgement "posreal"
      real_types nil)
-    (modes const-decl "bool" isolette nil)
+    (mode const-decl "bool" isolette nil)
     (b2n const-decl "nbit" bit nil)
     (alarm const-decl "bool" isolette nil)
     (held_for const-decl "bool" Time nil)
@@ -1058,7 +1060,7 @@
     (> const-decl "bool" reals nil)
     (posreal nonempty-type-eq-decl nil real_types nil)
     (delta const-decl "posreal" isolette nil)
-    (c_al_bool const-decl "bool" isolette nil)
+    (c_al_pred const-decl "bool" isolette nil)
     (env1 const-decl "bool" isolette nil))
    shostak))
  (usecase4 0
@@ -1069,8 +1071,8 @@
      real_types nil)
     (high_alarm const-decl "bool" isolette nil)
     (EPS const-decl "real" isolette nil)
-    (total_alarm const-decl "bool" isolette nil)
-    (modes const-decl "bool" isolette nil)
+    (alarm_check const-decl "bool" isolette nil)
+    (mode const-decl "bool" isolette nil)
     (b2n const-decl "nbit" bit nil)
     (alarm const-decl "bool" isolette nil)
     (held_for const-decl "bool" Time nil)
@@ -1087,7 +1089,7 @@
     (> const-decl "bool" reals nil)
     (posreal nonempty-type-eq-decl nil real_types nil)
     (delta const-decl "posreal" isolette nil)
-    (c_al_bool const-decl "bool" isolette nil)
+    (c_al_pred const-decl "bool" isolette nil)
     (env1 const-decl "bool" isolette nil)
     (rat_minus_rat_is_rat application-judgement "rat" rationals nil)
     (real_ge_is_total_order name-judgement "(total_order?[real])"

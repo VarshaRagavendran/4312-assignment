@@ -190,8 +190,8 @@ isolette : THEORY
 	  COND
 	      env1 AND m_st(i) = valid ->
  	      COND
-	          alarm(i) = on OR NOT held_for(c_al_pred,10)(i-1) -> c_al(i) = on,
-	          alarm(i) = off AND held_for(c_al_pred,10)(i-1) -> c_al(i) = off 
+	          alarm(i) = on OR NOT held_for(c_al_pred,2)(i-1) -> c_al(i) = on,
+	          alarm(i) = off AND held_for(c_al_pred,2)(i-1) -> c_al(i) = off 
 	      ENDCOND,
 	      NOT(env1 AND m_st(i) = valid) -> c_al(i) = on
           ENDCOND,
@@ -260,7 +260,7 @@ isolette : THEORY
       IMPLIES 
   c_al(1) = off
 
-  usecase4: CONJECTURE 
+ usecase4: CONJECTURE 
   m_ah(2)=99 
   AND m_al(2)=94 
   AND m_dl(2)=97 
@@ -274,5 +274,15 @@ isolette : THEORY
   AND m_tm(2)=98  
       IMPLIES 
   c_al(2)=off
+
+  usecase5: CONJECTURE
+  m_sw(1) = on AND m_sw(2) = on AND m_sw(3) = on AND m_sw(4) = on
+  AND m_al(2) = 93 AND m_ah(2) = 103 AND m_dl(2) = 94 AND m_dh(2) = 100 AND m_tm(2) = 96
+  AND m_st(2) = valid AND m_st(3) = invalid
+  AND mode(0) AND mode(1) AND mode(2) and mode(3)
+  AND alarm(3) AND alarm(4)
+
+  IMPLIES
+  c_al(3) = on AND c_al(4) = on
 
   END isolette

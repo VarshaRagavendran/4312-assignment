@@ -92,9 +92,9 @@ isolette : THEORY
       i > 0 ->
       IF m_st(i) = invalid THEN
           c_ms(i) = err1
-      ELSIF m_tm(i) > m_dh(i) THEN
+      ELSIF m_tm(i) > m_ah(i) THEN
 	  c_ms(i) = err2
-      ELSIF m_tm(i) < m_dl(i) THEN
+      ELSIF m_tm(i) < m_al(i) THEN
           c_ms(i) = err3
       ELSIF m_al(i) >= m_dl(i) THEN
           c_ms(i) = err4

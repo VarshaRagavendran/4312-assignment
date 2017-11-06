@@ -117,26 +117,30 @@ isolette : THEORY
   %------------------------------------------------------------------------%
   %Heat Control Function:
   %	Determines the mode of the heat control (thermostat) {on,off}.
-  heat_control(i:DTIME) : bool =
-  env1 
-      IMPLIES
+  heat_control(i:DTIME) : bool = 
   COND
       i = 0 -> c_hc(i) = off,
       i > 0 ->
       COND
-          c_md(i) = init OR c_md(i) = off -> c_hc(i) = off,
-	  NOT(c_md(i) = init OR c_md(i) = off) ->
+          c_md(i) = off OR c_md(i) = failed -> c_hc(i) = off,
+	  c_md(i) = init ->
 	  COND
-              c_md(i) = normal ->
+	      m_st(i) = valid ->
 	      COND
-	          m_tm(i) < m_dl(i) -> c_hc(i) = on,
-		  m_tm(i) > m_dh(i) -> c_hc(i) = off,
-		  m_dl(i) <= m_tm(i) AND m_tm(i) <= m_dh(i) -> c_hc(i) = c_hc(i-1)	
-	      ENDCOND,
-	      c_md(i) = failed -> c_hc(i) = off
+	          env1 -> c_hc(i) = on,
+		  NOT env1 -> c_hc(i) = off
+	      ENDCOND
+	      ,m_st(i) = invalid -> c_hc(i) = off
+	  ENDCOND
+	  ,c_md(i) = normal ->
+	  COND
+	      m_tm(i) < m_dl(i) -> c_hc(i) = on,
+	      m_tm(i) > m_dh(i) -> c_hc(i) = off,
+	      m_dl(i) <= m_tm(i) AND m_tm(i) <= m_dh(i) -> c_hc(i) = c_hc(i-1)
 	  ENDCOND
       ENDCOND
   ENDCOND
+
   %------------------------------------------------------------------------%
   %Predicate Function:
   %    [DTIME -> Bool]
